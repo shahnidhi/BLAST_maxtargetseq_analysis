@@ -1,8 +1,8 @@
-# Analyzing max_target_seqs parameter behavior in BLAST command line tool 
+# Analyzing max_target_seqs parameter behavior in the BLAST command line tool 
 ## Testing on BLAST 2.6.0
 
-### Difference in BLAST output when using max_target_seqs vs. not using this parameter
-For testing this, please download database file and the query sequences. We are testing for max_target_seqs=1 scenario here.
+### Difference in the BLAST output when using max_target_seqs vs. not using this parameter
+For testing this, please download [database file](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db.fasta) and the [query sequences](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/example.fasta). We are testing for max_target_seqs=1 scenario here.
 ```
 makeblastdb -in db.fasta  -out db.fasta  -dbtype nucl
 blastn -query example.fasta  -db db.fasta -outfmt 6 -max_target_seqs 1 -out example_db_top.blast.out
@@ -42,7 +42,7 @@ S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      
 ```
 ### The best BLAST hit changes with the change in the database sequence order
 To test this, we created random orders for database sequences and ran blastn command with max_target_seqs 1 parameter.
-You can download two such randomly ordered database from here (db_rand_1.fasta and db_rand_2.fasta).
+You can download two such randomly ordered database from here ([db_rand_1.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_1.fasta) and [db_rand_2.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_2.fasta)).
 ```
 makeblastdb -in db_rand_1.fasta  -out db_rand_1.fasta  -dbtype nucl
 blastn -query example.fasta  -db db_rand_1.fasta -outfmt 6 -max_target_seqs 1 -out example_db_rand1.top.blast.out
