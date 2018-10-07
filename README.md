@@ -5,7 +5,7 @@
 The following is a companion to the letter to the editor of the Bioinformatics journal (https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty833/5106166) where we raised the attention to a common mis-understanding of how the BLAST parameter -max_target_seqs operates.  Many users assume that this parameter will return the best hit for each query sequence, while in reality this is not the case.  We provide here datasets and examples that allow users to reproduce the behavior of BLAST.  We specifically focus on the following assertions:
 
 * The result of running BLAST with -max_target_seqs 1 (presumably the best hit) is not the same as picking the first hit (presumably the best) for a query sequence when running BLAST with default parameters.
-* The result of running BLAST with -max_targeted_seqs 1 changes depending on the order of sequences in the database.
+* The result of running BLAST with -max_target_seqs 1 changes depending on the order of sequences in the database.
 
 This behavior of BLAST may impact the accuracy of software that relies on BLAST to correctly retrieve the "best hit" of a query sequence against a database.
 
