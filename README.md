@@ -1,5 +1,17 @@
 # Analyzing max_target_seqs parameter behavior in the BLAST command line tool 
-## Testing on BLAST 2.6.0
+## All tests described below use NCBI BLAST+ 2.6.0
+
+### Introduction
+The following is a companion to the letter to the editor of the Bioinformatics journal (https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty833/5106166) where we raised the attention to a common mis-understanding of how the BLAST parameter -max_targeted_seqs operates.  Many users assume that this parameter will return the best hit for each query sequence, while in reality this is not the case.  We provide here datasets and examples that allow users to reproduce the behavior of BLAST.  We specifically focus on the following assertions:
+
+* The result of running BLAST with -max_targeted_seqs 1 (presumably the best hit) is not the same as picking the first hit (presumably the best) for a query sequence when running BLAST without default parameters.
+* The result of running BLAST with -max_targeted_seqs 1 changes depending on the order of sequences in the database.
+
+This behavior of BLAST may impact the accuracy of software that relies on BLAST to correctly retrieve the the "best hit" of a query sequence against a database.
+
+We note that, in many cases, BLAST does behave as expected, which explains why these issues are not better known in the bioinformatics community.  Also, it is important to stress that the use cases affected by this bug/feature of BLAST are not use cases for which BLAST was originally developed. The concept of "best hit" is not well defined, and depends on the ultimate application domain. Depending on application, the "best hit" may be the sequence with the lowest E-value, or the highest bit score, or the highest percent identity, or the highest database or query sequence coverage.  It is unreasonable to expect BLAST to correctly identify the "best hit" irrespective of how it is defined.  
+
+We would like to stress that we are not the first to report this issue. It was first reported by Sujai Kumar here: (https://gist.github.com/sujaikumar/504b3b7024eaf3a04ef5), and also "amplified" by a blog post from Peter Cock (https://blastedbio.blogspot.com/2015/12/blast-max-target-sequences-bug.html).  We further raised the issue through our letter to the editor because NCBI had taken no steps to educate the bioinformatics community about the potential mis-use of the BLAST tool.  
 
 ### Difference in the BLAST output when using max_target_seqs vs. not using this parameter
 For testing this, please download [database file](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db.fasta) and the [query sequences](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/example.fasta). We are testing for max_target_seqs=1 scenario here.
