@@ -2,12 +2,12 @@
 ## All tests described below use NCBI BLAST+ 2.6.0
 
 ### Introduction
-The following is a companion to the letter to the editor of the Bioinformatics journal (https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty833/5106166) where we raised the attention to a common mis-understanding of how the BLAST parameter -max_targeted_seqs operates.  Many users assume that this parameter will return the best hit for each query sequence, while in reality this is not the case.  We provide here datasets and examples that allow users to reproduce the behavior of BLAST.  We specifically focus on the following assertions:
+The following is a companion to the letter to the editor of the Bioinformatics journal (https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty833/5106166) where we raised the attention to a common mis-understanding of how the BLAST parameter -max_target_seqs operates.  Many users assume that this parameter will return the best hit for each query sequence, while in reality this is not the case.  We provide here datasets and examples that allow users to reproduce the behavior of BLAST.  We specifically focus on the following assertions:
 
-* The result of running BLAST with -max_targeted_seqs 1 (presumably the best hit) is not the same as picking the first hit (presumably the best) for a query sequence when running BLAST without default parameters.
+* The result of running BLAST with -max_target_seqs 1 (presumably the best hit) is not the same as picking the first hit (presumably the best) for a query sequence when running BLAST with default parameters.
 * The result of running BLAST with -max_targeted_seqs 1 changes depending on the order of sequences in the database.
 
-This behavior of BLAST may impact the accuracy of software that relies on BLAST to correctly retrieve the the "best hit" of a query sequence against a database.
+This behavior of BLAST may impact the accuracy of software that relies on BLAST to correctly retrieve the "best hit" of a query sequence against a database.
 
 We note that, in many cases, BLAST does behave as expected, which explains why these issues are not better known in the bioinformatics community.  Also, it is important to stress that the use cases affected by this bug/feature of BLAST are not use cases for which BLAST was originally developed. The concept of "best hit" is not well defined, and depends on the ultimate application domain. Depending on application, the "best hit" may be the sequence with the lowest E-value, or the highest bit score, or the highest percent identity, or the highest database or query sequence coverage.  It is unreasonable to expect BLAST to correctly identify the "best hit" irrespective of how it is defined.  
 
