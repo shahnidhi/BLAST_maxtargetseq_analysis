@@ -9,19 +9,19 @@ The following is a companion to the letter to the editor of the Bioinformatics j
 
 This behavior of BLAST may impact the accuracy of software that relies on BLAST to correctly retrieve the "best hit" of a query sequence against a database.
 
-We note that, in many cases, BLAST does behave as expected, which explains why these issues are not better known in the bioinformatics community.  Also, it is important to stress that the use cases affected by this bug/feature of BLAST are not use cases for which BLAST was originally developed. The concept of "best hit" is not well defined, and depends on the ultimate application domain. Depending on application, the "best hit" may be the sequence with the lowest E-value, or the highest bit score, or the highest percent identity, or the highest database or query sequence coverage.  It is unreasonable to expect BLAST to correctly identify the "best hit" irrespective of how it is defined.  
+We note that, in many cases, BLAST does behave as expected, which explains why these issues are not better known in the bioinformatics community.  The problem seems to manifest itself most prominently when the quality of a gapped alignment of two sequences is significantly different than the quality of their gapped alignment.  As such, this problem is likely to most significantly impact sequences generated with 454, IonTorrent, or 3rd generation sequencing technologies, as well as sequences that do not have evolutionarily close neighbors in the database. Also, it is important to stress that the use cases affected by this bug/feature of BLAST are not use cases for which BLAST was originally developed. The concept of "best hit" is not well defined, and depends on the ultimate application domain. Depending on application, the "best hit" may be the sequence with the lowest E-value, or the highest bit score, or the highest percent identity, or the highest database or query sequence coverage.  It is unreasonable to expect BLAST to correctly identify the "best hit" irrespective of how it is defined.  
 
 We would like to stress that we are not the first to report this issue. It was first reported by Sujai Kumar here: (https://gist.github.com/sujaikumar/504b3b7024eaf3a04ef5), and also "amplified" by a blog post from Peter Cock (https://blastedbio.blogspot.com/2015/12/blast-max-target-sequences-bug.html).  We further raised the issue through our letter to the editor because NCBI had taken no steps to educate the bioinformatics community about the potential mis-use of the BLAST tool.  
 
 ### Difference in the BLAST output when using max_target_seqs vs. not using this parameter
-For testing this, please download [database file](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db.fasta) and the [query sequences](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/example.fasta). We are testing for max_target_seqs=1 scenario here.
+For testing this, please download the [database file](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db.fasta) and the [query sequences](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/example.fasta). As a first test, we are demonstrating the impact of using max_target_seqs=1 as a parameter, usually intended to retrieve the "best hit".
 ```
 makeblastdb -in db.fasta  -out db.fasta  -dbtype nucl
 blastn -query example.fasta  -db db.fasta -outfmt 6 -max_target_seqs 1 -out example_db_top.blast.out
 blastn -query example.fasta  -db db.fasta -outfmt 6  -out example_db_full.blast.out
 ```
 We observe that the first hit for each query sequence is different in both the cases. 
-Comparing first hit from example_db_full.blast.out (first line) to example_db_top.blast.out (second line)
+The first hit for each query sequence from the example_db_full.blast.out (first line, un-restricted blast results) and example_db_top.blast.out (second line, -max_target_seqs 1) are shown below for the query sequences.
 ```
 S50_7242:pb_10cov_000M-001M     s_1013:COG0088  84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -54,8 +54,8 @@ S1170_2543:pb_10cov_011M-012M   s_1966:COG0201  82.612  1409    94      133     
 S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      606     1162    3       535     1.06e-160       564
 ```
 ### The best BLAST hit changes with the change in the database sequence order
-To test this, we created random orders for database sequences and ran blastn command with max_target_seqs 1 parameter.
-You can download two such randomly ordered database from here ([db_rand_1.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_1.fasta) and [db_rand_2.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_2.fasta)).
+To test this, we created random orders for database sequences and ran the blastn command with max_target_seqs 1 parameter.
+You can download two such randomly ordered database from  ([db_rand_1.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_1.fasta) and [db_rand_2.fasta](https://obj.umiacs.umd.edu/nidhi/blast_mts_experiments/db_rand_2.fasta)).
 ```
 makeblastdb -in db_rand_1.fasta  -out db_rand_1.fasta  -dbtype nucl
 blastn -query example.fasta  -db db_rand_1.fasta -outfmt 6 -max_target_seqs 1 -out example_db_rand1.top.blast.out
@@ -64,7 +64,7 @@ blastn -query example.fasta  -db db_rand_2.fasta -outfmt 6 -max_target_seqs 1 -o
 ```
 We observe that the BLAST hits may change based on the order of sequences in the database. Here, we show some of the changes we observed for this small query dataset.
 
-Comparing example_db_rand1.top.blast.out (first line) and example_db_top.blast.out (second line)
+Comparing example_db_rand1.top.blast.out (first line, random shuffling of initial database) and example_db_top.blast.out (second line, original database)
 ```
 S50_7242:pb_10cov_000M-001M     s_2717:COG0088  84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -93,7 +93,7 @@ S188_1416:pb_10cov_001M-002M    s_15600:COG0094 86.311  599     15      63      
 S1170_2543:pb_10cov_011M-012M   s_16228:COG0201 82.553  1410    93      134     4088    5459    3       1297    0.0     1099
 S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      606     1162    3       535     1.06e-160       564
 ```
-Comparing example_db_rand2.top.blast.out (first line) and example_db_top.blast.out (second line)
+Comparing example_db_rand2.top.blast.out (first line, separate reshuffling of database) and example_db_top.blast.out (second line, original database)
 ```
 S50_7242:pb_10cov_000M-001M     s_539:COG0088   84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -125,7 +125,7 @@ S188_1416:pb_10cov_001M-002M    s_15600:COG0094 86.311  599     15      63      
 S1170_2543:pb_10cov_011M-012M   s_2195:COG0201  82.624  1410    92      134     4088    5459    3       1297    0.0     1105
 S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      606     1162    3       535     1.06e-160       564
 ```
-Comparing example_db_rand2.top.blast.out (first line) and example_db_rand1.top.blast.out (second line)
+Comparing two different reshufflings of the database: example_db_rand2.top.blast.out (first line) and example_db_rand1.top.blast.out (second line)
 ```
 S216_4030:pb_10cov_001M-002M    s_11826:COG0090 81.678  906     55      101     2118    2995    3       825     0.0     651
 S216_4030:pb_10cov_001M-002M    s_16711:COG0088 82.232  681     40      73      1154    1818    1       616     2.33e-145       512
@@ -140,21 +140,21 @@ S1170_2543:pb_10cov_011M-012M   s_2195:COG0201  82.624  1410    92      134     
 S1170_2543:pb_10cov_011M-012M   s_16228:COG0201 82.553  1410    93      134     4088    5459    3       1297    0.0     1099
 ```
 ### How does BLAST define "best hit"?
-We observed that when you run BLAST with default parameters, it gives all hits for a query sequence in the descending order of the bitscore. 
+When running BLAST with default parameters, the output is broadly sorted in descending order of bitscore, and equivalently, increasing order of E-value (note that the actual order is impacted by the number of high-scoring pairs found between two sequences, as well as the implicit or explicity cutoff for the max_target_seqs parameter).
 ```
 blastn -query example.fasta  -db db.fasta -outfmt 6  -out example_db_full.blast.out
 sort -k1,1 -k 12,12nr example_db_full.blast.out > sorted_bitscore_example_db_full.blast.out
 ```
 Comparing example_db_full.blast.out and sorted_bitscore_example_db_full.blast.out, they have identical order of hits for all query sequences.
 
-However, it is not clear when we use max_target_seqs parameter, what is the "best hit" selection criteria. Our analysis shows that the best hit that BLAST returns when using max_target_seqs is the not the "best hit" by the criteria of the highest bit score or the highest percent identity. 
+However, it is not clear when we use max_target_seqs parameter, what is the "best hit" selection criteria. Our analysis shows that the best hit that BLAST returns when using max_target_seqs does not match either the highest bit score, nor the highest percent identity.  
 ```
 blastn -query example.fasta  -db db.fasta -outfmt 6 -max_target_seqs 1 -out example_db_top.blast.out
 blastn -query example.fasta  -db db.fasta -outfmt 6  -out example_db_full.blast.out
 sort -k1,1 -k 12,12nr example_db_full.blast.out > sorted_bitscore_example_db_full.blast.out
 sort -k1,1 -k3,3nr example_db_full.blast.out > sorted_percent_identity_example_db_full.blast.out
 ```
-Comparing sorted_bitscore_example_db_full.blast.out (first line) and example_db_top.blast.out (second line)
+Comparing sorted_bitscore_example_db_full.blast.out (first line, highest bitscore) and example_db_top.blast.out (second line, max_target_seqs 1)
 ```
 NC_006448.1-15016:454_5cov_045M-050M    s_10633:COG0087 98.540  137     1       1       1       136     492     628     2.46e-65        243
 NC_006448.1-15016:454_5cov_045M-050M    s_7827:COG0088  100.000 130     0       0       161     290     1       130     8.87e-65        241
@@ -186,7 +186,7 @@ S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      
 S52_804:pb_10cov_000M-001M      s_11999:COG0090 87.126  769     19      74      911     1656    7       718     0.0     798
 S52_804:pb_10cov_000M-001M      s_7931:COG0088  86.025  644     23      62      1       618     195     797     1.42e-180       628
 ```
-Comparing sorted_percent_identity_example_db_full.blast.out (first line) and example_db_top.blast.out (second line)
+Comparing sorted_percent_identity_example_db_full.blast.out (first line, highest % identity) and example_db_top.blast.out (second line, max_target_seqs 1)
 ```
 S190_1420:pb_10cov_001M-002M    s_10249:COG0090 84.294  885     49      83      3789    4646    2       823     0.0     782
 S190_1420:pb_10cov_001M-002M    s_8639:COG0088  83.639  709     39      72      2762    3452    3       652     3.42e-170       595
