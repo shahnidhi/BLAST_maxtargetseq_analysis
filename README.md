@@ -20,7 +20,8 @@ makeblastdb -in db.fasta  -out db.fasta  -dbtype nucl
 blastn -query example.fasta  -db db.fasta -outfmt 6 -max_target_seqs 1 -out example_db_top.blast.out
 blastn -query example.fasta  -db db.fasta -outfmt 6  -out example_db_full.blast.out
 ```
-We observe that the first hit for each query sequence is different in both the cases. (Comparing first hit from example_db_full.blast.out to example_db_top.blast.out) 
+We observe that the first hit for each query sequence is different in both the cases. 
+Comparing first hit from example_db_full.blast.out (first line) to example_db_top.blast.out (second line)
 ```
 S50_7242:pb_10cov_000M-001M     s_1013:COG0088  84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -63,7 +64,7 @@ blastn -query example.fasta  -db db_rand_2.fasta -outfmt 6 -max_target_seqs 1 -o
 ```
 We observe that the BLAST hits may change based on the order of sequences in the database. Here, we show some of the changes we observed for this small query dataset.
 
-Comparing example_db_rand1.top.blast.out and example_db_top.blast.out
+Comparing example_db_rand1.top.blast.out (first line) and example_db_top.blast.out (second line)
 ```
 S50_7242:pb_10cov_000M-001M     s_2717:COG0088  84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -92,7 +93,7 @@ S188_1416:pb_10cov_001M-002M    s_15600:COG0094 86.311  599     15      63      
 S1170_2543:pb_10cov_011M-012M   s_16228:COG0201 82.553  1410    93      134     4088    5459    3       1297    0.0     1099
 S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      606     1162    3       535     1.06e-160       564
 ```
-Comparing example_db_rand2.top.blast.out and example_db_top.blast.out
+Comparing example_db_rand2.top.blast.out (first line) and example_db_top.blast.out (second line)
 ```
 S50_7242:pb_10cov_000M-001M     s_539:COG0088   84.598  870     33      89      423     1258    1       803     0.0     771
 S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      2352    2785    1       420     2.40e-135       479
@@ -124,7 +125,7 @@ S188_1416:pb_10cov_001M-002M    s_15600:COG0094 86.311  599     15      63      
 S1170_2543:pb_10cov_011M-012M   s_2195:COG0201  82.624  1410    92      134     4088    5459    3       1297    0.0     1105
 S1170_2543:pb_10cov_011M-012M   s_8667:COG0094  86.038  573     24      53      606     1162    3       535     1.06e-160       564
 ```
-Comparing example_db_rand1.top.blast.out and example_db_rand2.top.blast.out
+Comparing example_db_rand2.top.blast.out (first line) and example_db_rand1.top.blast.out (second line)
 ```
 S216_4030:pb_10cov_001M-002M    s_11826:COG0090 81.678  906     55      101     2118    2995    3       825     0.0     651
 S216_4030:pb_10cov_001M-002M    s_16711:COG0088 82.232  681     40      73      1154    1818    1       616     2.33e-145       512
@@ -153,7 +154,7 @@ blastn -query example.fasta  -db db.fasta -outfmt 6  -out example_db_full.blast.
 sort -k1,1 -k 12,12nr example_db_full.blast.out > sorted_bitscore_example_db_full.blast.out
 sort -k1,1 -k3,3nr example_db_full.blast.out > sorted_percent_identity_example_db_full.blast.out
 ```
-Comparing example_db_top.blast.out and sorted_bitscore_example_db_full.blast.out
+Comparing sorted_bitscore_example_db_full.blast.out (first line) and example_db_top.blast.out (second line)
 ```
 NC_006448.1-15016:454_5cov_045M-050M    s_10633:COG0087 98.540  137     1       1       1       136     492     628     2.46e-65        243
 NC_006448.1-15016:454_5cov_045M-050M    s_7827:COG0088  100.000 130     0       0       161     290     1       130     8.87e-65        241
@@ -185,7 +186,7 @@ S50_7242:pb_10cov_000M-001M     s_15833:COG0185 87.583  451     8       42      
 S52_804:pb_10cov_000M-001M      s_11999:COG0090 87.126  769     19      74      911     1656    7       718     0.0     798
 S52_804:pb_10cov_000M-001M      s_7931:COG0088  86.025  644     23      62      1       618     195     797     1.42e-180       628
 ```
-Comparing example_db_top.blast.out and sorted_percent_identity_example_db_full.blast.out
+Comparing sorted_percent_identity_example_db_full.blast.out (first line) and example_db_top.blast.out (second line)
 ```
 S190_1420:pb_10cov_001M-002M    s_10249:COG0090 84.294  885     49      83      3789    4646    2       823     0.0     782
 S190_1420:pb_10cov_001M-002M    s_8639:COG0088  83.639  709     39      72      2762    3452    3       652     3.42e-170       595
